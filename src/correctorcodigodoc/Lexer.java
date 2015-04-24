@@ -27,10 +27,6 @@ public class Lexer {
         TokensAtomicos.put('\n', Token.Ids.NUEVA_LINEA);
         TokensAtomicos.put('←', Token.Ids.ASIGNACION);
         
-        if (TokensAtomicos.containsKey(' ')) {
-            JOptionPane.showMessageDialog(null, "ye");
-        }
-        
         TiposToken.put("lea", Token.Ids.LEA);
         TiposToken.put("leo", Token.Ids.LEA);
         TiposToken.put("leer", Token.Ids.LEA);

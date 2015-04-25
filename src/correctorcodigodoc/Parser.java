@@ -35,7 +35,8 @@ public class Parser {
         if (current_token == null)
             return null;
         
-        Token next_token = lexer.nextToken();
+        Token next_token = lexer.peekToken();
+        boolean advance = true;
         ParserStatement statement = null;
         
         switch (current_token.id) {
@@ -49,7 +50,7 @@ public class Parser {
                 
             case TIPO_DATO: {
                 // El siguiente token debe ser un identificador o una lista
-                List<Identifier> tokens = parseIdentifierList(next_token);
+                List<Identifier> tokens = parseIdentifierList(lexer.nextToken());
                 if (tokens.isEmpty()) {
                     throw new ParseException("Error de sintaxis en la lista de identificadores");
                 }
@@ -57,12 +58,13 @@ public class Parser {
                 
                 // Ya nos comimos el último token, por tanto tenemos que retroceder una posición
                 next_token = lexer.prevToken();
+                advance = false;
                 break;
             }
                 
             case LEA: {
                 // El siguiente token debe ser un identificador o una lista
-                List<Identifier> tokens = parseIdentifierList(next_token);
+                List<Identifier> tokens = parseIdentifierList(lexer.nextToken());
                 if (tokens.isEmpty()) {
                     throw new ParseException("Error de sintaxis en la lista de identificadores");
                 }
@@ -70,21 +72,35 @@ public class Parser {
                 
                 // Ya nos comimos el último token, por tanto tenemos que retroceder una posición
                 next_token = lexer.prevToken();
+                advance = false;
                 break;
             }
             
             case PARA: {
-                statement = parseForStatement(next_token);
-                next_token = lexer.nextToken();
+                statement = parseForStatement(lexer.nextToken());
                 break;
             }
             case FIN_PARA: {
                 statement = new EndForStatement();
                 break;
             }
+            
+            case IDENTIFIER: {
+                // Un identificador libre indica una asignación
+                Identifier variable = parseIdentifier(current_token);
+                Token asign = lexer.nextToken(); // Comete el signo de asignacion
+                if (asign.id != Token.Ids.ASIGNACION)
+                    throw new ParseException("Variable inesperada");
+                Expression value = parseExpression(lexer.nextToken(), Token.Ids.NUEVA_LINEA);
+                statement = new AssignmentStatement(variable, value);
+                break;
+            }
         }
         
-        current_token = next_token;
+        if (advance)
+            current_token = lexer.nextToken();
+        else
+            current_token = next_token;
         return statement;
     }
     

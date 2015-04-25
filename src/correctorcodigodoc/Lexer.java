@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
  * @author Sebastian
  */
 public class Lexer {
-    private char[] codigo;
+    private final char[] codigo;
     private char ultimo_caracter;
     private Token ultimo_token;
     private int lex_index;
@@ -44,8 +44,12 @@ public class Lexer {
         
         TiposToken.put("inicio", Token.Ids.INICIO);
         TiposToken.put("fin", Token.Ids.FIN);
+        
         TiposToken.put("mientras_que", Token.Ids.MIENTRAS_QUE);
+        TiposToken.put("mq", Token.Ids.MIENTRAS_QUE);
         TiposToken.put("fin_mientras_que", Token.Ids.FIN_MIENTRAS_QUE);
+        TiposToken.put("fin_mq", Token.Ids.FIN_MIENTRAS_QUE);
+        
         TiposToken.put("haga", Token.Ids.HAGA);
         TiposToken.put("si", Token.Ids.SI);
         TiposToken.put("entonces", Token.Ids.ENTONCES);

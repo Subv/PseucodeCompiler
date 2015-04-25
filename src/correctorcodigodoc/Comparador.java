@@ -4,6 +4,7 @@ import compiladorpseu.Tokens.Token;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JOptionPane;
+import parser.ParserStatement;
 
 /**
  * @author Sebastian
@@ -148,6 +149,17 @@ public class Comparador {
     public ArrayList<Error> CompararLexer() {
         ArrayList<Error> errores_detectados = new ArrayList<Error>();
         
+        Parser parser = new Parser(lexer_texto);
+        try {
+            ParserStatement st = parser.parseStatement();
+            while (st != null)
+                st = parser.parseStatement();
+        } catch (Parser.ParseException ex) {
+            JOptionPane.showMessageDialog(null, ex.message);
+        }
+        
+        return errores_detectados;
+        /*
         ArrayList<Token> tokens_patron = new ArrayList<Token>();
         ArrayList<Token> tokens_texto = new ArrayList<Token>();
         
@@ -180,7 +192,7 @@ public class Comparador {
             }
         }
         
-        return errores_detectados;
+        return errores_detectados;*/
     }
     
     public ArrayList<Error> CompararCaracteres() {

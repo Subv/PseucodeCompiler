@@ -13,7 +13,6 @@ public class Lexer {
     private char ultimo_caracter;
     private Token ultimo_token;
     private int lex_index;
-    private int lex_linea;
     
     private final static HashMap<String, Token.Ids> TiposToken;
     private final static HashMap<Character, Token.Ids> TokensAtomicos;
@@ -72,7 +71,6 @@ public class Lexer {
         this.ultimo_caracter = ' ';
         this.lex_index = 0;
         this.ultimo_token = null;
-        this.lex_linea = 0;
     }
     
     private Token nextTokenInternal() {
@@ -161,6 +159,25 @@ public class Lexer {
         Token next_token = nextTokenInternal();
         ultimo_token = next_token;
         return next_token;
+    }
+    
+    public Token peekToken() {
+        // Guarda el índice y el caracter actual
+        int lex_idx = lex_index;
+        char ultimo_caract = ultimo_caracter;
+        
+        // Lexea un token
+        Token token = nextTokenInternal();
+        
+        // Restaura el índice y el caracter
+        lex_index = lex_idx;
+        ultimo_caracter = ultimo_caract;
+        
+        return token;
+    }
+    
+    public Token prevToken() {
+        return ultimo_token;
     }
     
     private char getChar() {

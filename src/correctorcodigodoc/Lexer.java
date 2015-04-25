@@ -97,6 +97,21 @@ public class Lexer {
             return ret;
         }
         
+        // Parsea una string que comienza por ' o "
+        if (ultimo_caracter == '\'' || ultimo_caracter == '"') {
+            // Come caracteres hasta que encuentres el cerrador
+            char iniciador = ultimo_caracter;
+            String string = "";
+            
+            while (hasNextChar() && (ultimo_caracter = getChar()) != iniciador)
+                string += String.valueOf(ultimo_caracter);
+            
+            // Comete el cerrador
+            eatNextChar();
+            
+            return new Token(Token.Ids.STRING, string, lex_index);
+        }
+        
         // Parsea una palabra vorazmente
         if (Character.isLetter(ultimo_caracter) || ultimo_caracter == '_') {
             String identificador = "";

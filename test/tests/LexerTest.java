@@ -155,4 +155,17 @@ public class LexerTest {
         assertEquals(Token.Ids.NUMERO, token.id);
         assertEquals("65", token.texto);
     }
+    
+    @Test
+    public void TestString() {
+        Lexer lexer = new Lexer("'He\"llo \"the\"re!' \" OH'AI \"");
+        
+        Token token = lexer.nextToken();
+        assertEquals(Token.Ids.STRING, token.id);
+        assertEquals("He\"llo \"the\"re!", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.STRING, token.id);
+        assertEquals(" OH'AI ", token.texto);
+    }
 }

@@ -134,8 +134,11 @@ public class Lexer {
                 String numero = "";
                 do {
                     numero += ultimo_caracter;
+                    
+                    if (!hasNextChar())
+                        break;
                     ultimo_caracter = getChar();
-                } while (hasNextChar() && (Character.isDigit(ultimo_caracter) || ultimo_caracter == '.'));
+                } while (Character.isDigit(ultimo_caracter) || ultimo_caracter == '.');
                 
                 return new Token(Token.Ids.NUMERO, numero, lex_index);
             }

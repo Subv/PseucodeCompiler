@@ -71,4 +71,41 @@ public class LexerTest {
         assertEquals(Token.Ids.IDENTIFIER, token.id);
         assertEquals("BAD_ID_4", token.texto);
     }
+    
+    @Test
+    public void TestMenos() {
+        Lexer lexer = new Lexer("65 135, -30-25, -653");
+        
+        Token token = lexer.nextToken();
+        assertEquals(Token.Ids.NUMERO, token.id);
+        assertEquals("65", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.NUMERO, token.id);
+        assertEquals("135", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.COMA, token.id);
+        assertEquals(",", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.NUMERO, token.id);
+        assertEquals("-30", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.MENOS_BINARIO, token.id);
+        assertEquals("-", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.NUMERO, token.id);
+        assertEquals("25", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.COMA, token.id);
+        assertEquals(",", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.NUMERO, token.id);
+        assertEquals("-653", token.texto);
+    }
 }

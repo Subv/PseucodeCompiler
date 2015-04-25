@@ -28,6 +28,8 @@ public class Token {
                 
         MENOS_BINARIO, MAS_BINARIO, MODULO, MENOR_QUE, MAYOR_QUE,
         
+        MENOS_UNARIO,
+        
         PARENTESIS_ABRE, PARENTESIS_CIERRA,
         
         ASIGNACION,

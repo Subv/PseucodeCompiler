@@ -126,7 +126,7 @@ public class Lexer {
                     return new Token(Token.Ids.MENOS_BINARIO, "-", lex_index);
                 }
                 
-                // De lo contrario tenemos un menos unario, que es un número, fallback al siguiente caso
+                // De lo contrario tenemos un menos unario, que es un número o un identificador negado, fallback al siguiente caso
             }
             
             // Parsea un número vorazmente
@@ -139,6 +139,11 @@ public class Lexer {
                         break;
                     ultimo_caracter = getChar();
                 } while (Character.isDigit(ultimo_caracter) || ultimo_caracter == '.');
+                
+                // No hay un número, por tanto tenemos un menos unario
+                if (numero.equals("-")) {
+                    return new Token(Token.Ids.MENOS_UNARIO, "-", lex_index);
+                }
                 
                 return new Token(Token.Ids.NUMERO, numero, lex_index);
             }

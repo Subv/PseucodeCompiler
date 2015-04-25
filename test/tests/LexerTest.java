@@ -107,5 +107,52 @@ public class LexerTest {
         token = lexer.nextToken();
         assertEquals(Token.Ids.NUMERO, token.id);
         assertEquals("-653", token.texto);
+        
+        
+        lexer = new Lexer("x-35, -x, -x-65");
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.IDENTIFIER, token.id);
+        assertEquals("x", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.MENOS_BINARIO, token.id);
+        assertEquals("-", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.NUMERO, token.id);
+        assertEquals("35", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.COMA, token.id);
+        assertEquals(",", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.MENOS_UNARIO, token.id);
+        assertEquals("-", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.IDENTIFIER, token.id);
+        assertEquals("x", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.COMA, token.id);
+        assertEquals(",", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.MENOS_UNARIO, token.id);
+        assertEquals("-", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.IDENTIFIER, token.id);
+        assertEquals("x", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.MENOS_BINARIO, token.id);
+        assertEquals("-", token.texto);
+        
+        token = lexer.nextToken();
+        assertEquals(Token.Ids.NUMERO, token.id);
+        assertEquals("65", token.texto);
     }
 }

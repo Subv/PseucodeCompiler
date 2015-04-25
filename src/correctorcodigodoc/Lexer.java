@@ -26,6 +26,13 @@ public class Lexer {
         TokensAtomicos.put(',', Token.Ids.COMA);
         TokensAtomicos.put('\n', Token.Ids.NUEVA_LINEA);
         TokensAtomicos.put('←', Token.Ids.ASIGNACION);
+        TokensAtomicos.put('=', Token.Ids.ASIGNACION);
+        TokensAtomicos.put('+', Token.Ids.MAS_BINARIO);
+        TokensAtomicos.put('%', Token.Ids.MODULO);
+        TokensAtomicos.put('<', Token.Ids.MENOR_QUE);
+        TokensAtomicos.put('>', Token.Ids.MAYOR_QUE);
+        TokensAtomicos.put('.', Token.Ids.PUNTO);
+        TokensAtomicos.put(':', Token.Ids.DOS_PUNTOS);
         
         TiposToken.put("lea", Token.Ids.LEA);
         TiposToken.put("leo", Token.Ids.LEA);
@@ -52,6 +59,12 @@ public class Lexer {
         
         TiposToken.put("real", Token.Ids.TIPO_DATO);
         TiposToken.put("reales", Token.Ids.TIPO_DATO);
+        
+        TiposToken.put("mod", Token.Ids.MODULO);
+        
+        TiposToken.put("proc", Token.Ids.PROC);
+        
+        TiposToken.put("fin_proc", Token.Ids.FIN_PROC);
     }
     
     public Lexer(String program) {
@@ -67,7 +80,7 @@ public class Lexer {
             return null;
         
         // Salta los espacios en blanco
-        while (ultimo_caracter == ' ')
+        while (ultimo_caracter == ' ' || ultimo_caracter == '\t' || ultimo_caracter == '\r')
             ultimo_caracter = getChar();
         
         // Si encontramos un comentario, salta a la siguiente linea
@@ -75,28 +88,33 @@ public class Lexer {
             if (hasNextChar() && peekChar() == '/') {
                 eatUntilNextLine();
                 // Devuelve un token de nueva linea
-                return new Token(Token.Ids.NUEVA_LINEA, "\n");
+                return new Token(Token.Ids.NUEVA_LINEA, "\n", lex_index);
             }
         }
         
         // Identifica los casos especiales , ( ) ← \n
         if (TokensAtomicos.containsKey(ultimo_caracter)) {
-            Token ret = new Token(TokensAtomicos.get(ultimo_caracter), String.valueOf(ultimo_caracter));
+            Token ret = new Token(TokensAtomicos.get(ultimo_caracter), String.valueOf(ultimo_caracter), lex_index);
             eatNextChar();
             return ret;
         }
         
         // Parsea una palabra vorazmente
         if (Character.isLetter(ultimo_caracter)) {
-            String identificador = String.valueOf(ultimo_caracter);
-            while (hasNextChar() && Character.isLetterOrDigit(ultimo_caracter = getChar()))
-                identificador += ultimo_caracter;
+            String identificador = "";
+            do {
+                identificador += String.valueOf(ultimo_caracter);
+                
+                if (!hasNextChar())
+                    break;
+                ultimo_caracter = getChar();
+            } while (Character.isLetterOrDigit(ultimo_caracter) || ultimo_caracter == '_');
             
             // Verifica si la palabra es una keyword o una variable
             if (TiposToken.containsKey(identificador.toLowerCase())) {
-                return new Token(TiposToken.get(identificador.toLowerCase()), identificador);
+                return new Token(TiposToken.get(identificador.toLowerCase()), identificador, lex_index);
             } else {
-                return new Token(Token.Ids.IDENTIFIER, identificador);
+                return new Token(Token.Ids.IDENTIFIER, identificador, lex_index);
             }
         } else {
             // Parsea el menos unario y binario
@@ -105,7 +123,7 @@ public class Lexer {
                 if (ultimo_token != null && (ultimo_token.id == Token.Ids.NUMERO || ultimo_token.id == Token.Ids.IDENTIFIER)) {
                     // Nos comemos el -
                     eatNextChar();
-                    return new Token(Token.Ids.MENOS_BINARIO, "-");
+                    return new Token(Token.Ids.MENOS_BINARIO, "-", lex_index);
                 }
                 
                 // De lo contrario tenemos un menos unario, que es un número, fallback al siguiente caso
@@ -119,14 +137,16 @@ public class Lexer {
                     ultimo_caracter = getChar();
                 } while (hasNextChar() && (Character.isDigit(ultimo_caracter) || ultimo_caracter == '.'));
                 
-                return new Token(Token.Ids.NUMERO, numero);
+                return new Token(Token.Ids.NUMERO, numero, lex_index);
             }
         }
+        
+        Token ret = new Token(Token.Ids.UNKNOWN, String.valueOf(ultimo_caracter), lex_index);
         
         if (hasNextChar())
             eatNextChar();
         
-        return new Token(Token.Ids.UNKNOWN, "");
+        return ret;
     }
     
     public Token nextToken() {
@@ -144,7 +164,8 @@ public class Lexer {
     }
     
     private void eatNextChar() {
-        ultimo_caracter = getChar();
+        if (hasNextChar())
+            ultimo_caracter = getChar();
     }
     
     private char peekChar() {

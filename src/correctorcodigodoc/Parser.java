@@ -76,6 +76,12 @@ public class Parser {
                 break;
             }
             
+            case ESCRIBA: {
+                List<Expression> expressions = parseExpressionList(lexer.nextToken(), Token.Ids.NUEVA_LINEA);
+                statement = new OutputStatement(expressions);
+                break;
+            }
+            
             case PARA: {
                 statement = parseForStatement(lexer.nextToken());
                 break;
@@ -93,6 +99,15 @@ public class Parser {
                     throw new ParseException("Variable inesperada");
                 Expression value = parseExpression(lexer.nextToken(), Token.Ids.NUEVA_LINEA);
                 statement = new AssignmentStatement(variable, value);
+                break;
+            }
+            
+            case MIENTRAS_QUE: {
+                statement = parseWhileStatement(lexer.nextToken());
+                break;
+            }
+            case FIN_MIENTRAS_QUE: {
+                statement = new EndWhileStatement();
                 break;
             }
         }
@@ -155,10 +170,10 @@ public class Parser {
             if (parametros.isEmpty()) {
                 throw new ParseException("Error de sintaxis en la lista de identificadores");
             }
-            return new Identifier(token_inicial.texto, parametros, false);
+            return new Identifier(token_inicial, parametros, false);
         }
         
-        return new Identifier(token_inicial.texto, null, token_inicial.id == Token.Ids.NUMERO);
+        return new Identifier(token_inicial, null, token_inicial.id == Token.Ids.NUMERO);
     }
     
     /*
@@ -251,5 +266,32 @@ public class Parser {
         }
         
         return new ForStatement(conditions, body);
+    }
+    
+    /*
+     * Parsea una estructura MIENTRAS_QUE de la forma MIENTRAS_QUE ( CONDICION ) HAGA
+     * @param token_inicial El token que comienza el mientras que
+     * @returns La estructura MIENTRAS_QUE parseada
+     */
+    public WhileStatement parseWhileStatement(Token token_inicial) throws ParseException {
+        if (token_inicial.id != Token.Ids.PARENTESIS_ABRE)
+            throw new ParseException("Mientras Que inválido");
+        
+        Expression condicion = parseExpression(token_inicial, Token.Ids.HAGA);
+        
+        // Parsea el cuerpo del para, hasta que encontremos un FIN_MIENTRAS_QUE
+        List<ParserStatement> body = new ArrayList<ParserStatement>();
+        
+        // Comete el HAGA
+        current_token = lexer.nextToken();
+        
+        ParserStatement statement = null;
+        
+        while (statement == null || !(statement instanceof EndWhileStatement)) {
+            statement = parseStatement();
+            body.add(statement);
+        }
+        
+        return new WhileStatement(condicion, body);
     }
 }

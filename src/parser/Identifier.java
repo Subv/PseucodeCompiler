@@ -5,6 +5,7 @@
  */
 package parser;
 
+import compiladorpseu.Tokens.Token;
 import java.util.List;
 
 /**
@@ -13,17 +14,17 @@ import java.util.List;
  */
 public class Identifier {
     private List<Expression> parameters;
-    private String nombre;
+    private Token token;
     private boolean constant;
     
-    public Identifier(String nombre, List<Expression> parameters, boolean constant) {
+    public Identifier(Token token, List<Expression> parameters, boolean constant) {
         this.parameters = parameters;
-        this.nombre = nombre;
+        this.token = token;
         this.constant = constant;
     }
     
     public String getNombre() {
-        return nombre;
+        return token.texto;
     }
     
     public List<Expression> getParameters() {

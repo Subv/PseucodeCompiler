@@ -26,7 +26,7 @@ public class Token {
         
         COMA,
                 
-        MENOS_BINARIO,
+        MENOS_BINARIO, MAS_BINARIO, MODULO, MENOR_QUE, MAYOR_QUE,
         
         PARENTESIS_ABRE, PARENTESIS_CIERRA,
         
@@ -36,14 +36,20 @@ public class Token {
         
         NUEVA_LINEA,
         
+        PROC, FIN_PROC,
+        
+        PUNTO, DOS_PUNTOS,
+        
         UNKNOWN,
     }
     
     public Ids id;
     public String texto;
+    public int lex_index;
     
-    public Token(Ids id, String identificador) {
+    public Token(Ids id, String identificador, int lex_index) {
         this.id = id;
         this.texto = identificador;
+        this.lex_index = lex_index - identificador.length();
     }
 }

@@ -159,12 +159,14 @@ public class Comparador {
             tokens_texto.add(tk);
         
         int linea = 0;
+        int caracteres_contados = 0;
         for (int i = 0, j = 0; i < tokens_patron.size() && j < tokens_texto.size(); ++i, ++j) {
             Token token_patron = tokens_patron.get(i);
             Token token_texto = tokens_texto.get(j);
             
-            if (token_texto.id == Token.Ids.NUEVA_LINEA)
+            if (token_texto.id == Token.Ids.NUEVA_LINEA) {
                 linea += 1;
+            }
             
             // Si no son la misma estructura, hay un error
             if (token_patron.id != token_texto.id) {

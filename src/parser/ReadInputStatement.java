@@ -11,12 +11,10 @@ import java.util.List;
  *
  * @author Sebastian
  */
-public class Identifier {
-    private List<Expression> parameters;
-    private String nombre;
+public class ReadInputStatement extends ParserStatement {
+    private List<Identifier> identifiers;
     
-    public Identifier(String nombre, List<Expression> parameters) {
-        this.parameters = parameters;
-        this.nombre = nombre;
+    public ReadInputStatement(List<Identifier> identifiers) {
+        this.identifiers = identifiers;
     }
 }

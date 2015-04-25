@@ -5,10 +5,25 @@
  */
 package parser;
 
+import compiladorpseu.Tokens.Token;
+import java.util.ArrayList;
+
 /**
  *
  * @author Sebastian
  */
 public class Expression {
+    private ArrayList<Token> tokens = new ArrayList<Token>();
     
+    public Expression() {
+        
+    }
+    
+    public void addToken(Token token) {
+        tokens.add(token);
+    }
+    
+    public boolean isEmpty() {
+        return tokens.isEmpty();
+    }
 }

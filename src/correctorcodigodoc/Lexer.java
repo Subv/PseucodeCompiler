@@ -100,7 +100,7 @@ public class Lexer {
         }
         
         // Parsea una palabra vorazmente
-        if (Character.isLetter(ultimo_caracter)) {
+        if (Character.isLetter(ultimo_caracter) || ultimo_caracter == '_') {
             String identificador = "";
             do {
                 identificador += String.valueOf(ultimo_caracter);

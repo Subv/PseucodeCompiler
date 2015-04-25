@@ -49,30 +49,26 @@ public class LexerTest {
     
     @Test
     public void TestIdentifiers() {
-        Lexer lexer = new Lexer("ID0 ID_1 _BAD_ID3 4BAD_ID_4");
+        Lexer lexer = new Lexer("ID0 ID_1 __ID3 4BAD_ID_4");
         
         Token token = lexer.nextToken();
-        assertEquals(token.id, Token.Ids.IDENTIFIER);
-        assertEquals(token.texto, "ID0");
+        assertEquals(Token.Ids.IDENTIFIER, token.id);
+        assertEquals("ID0", token.texto);
         
         token = lexer.nextToken();
-        assertEquals(token.id, Token.Ids.IDENTIFIER);
-        assertEquals(token.texto, "ID_1");
+        assertEquals(Token.Ids.IDENTIFIER, token.id);
+        assertEquals("ID_1", token.texto);
         
         token = lexer.nextToken();
-        assertEquals(token.id, Token.Ids.UNKNOWN);
-        assertEquals(token.texto, "_");
+        assertEquals(Token.Ids.IDENTIFIER, token.id);
+        assertEquals("__ID3", token.texto);
         
         token = lexer.nextToken();
-        assertEquals(token.id, Token.Ids.IDENTIFIER);
-        assertEquals(token.texto, "BAD_ID3");
+        assertEquals(Token.Ids.NUMERO, token.id);
+        assertEquals("4", token.texto);
         
         token = lexer.nextToken();
-        assertEquals(token.id, Token.Ids.NUMERO);
-        assertEquals(token.texto, "4");
-        
-        token = lexer.nextToken();
-        assertEquals(token.id, Token.Ids.IDENTIFIER);
-        assertEquals(token.texto, "BAD_ID_4");
+        assertEquals(Token.Ids.IDENTIFIER, token.id);
+        assertEquals("BAD_ID_4", token.texto);
     }
 }

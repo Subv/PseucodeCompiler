@@ -14,9 +14,23 @@ import java.util.List;
 public class Identifier {
     private List<Expression> parameters;
     private String nombre;
+    private boolean constant;
     
-    public Identifier(String nombre, List<Expression> parameters) {
+    public Identifier(String nombre, List<Expression> parameters, boolean constant) {
         this.parameters = parameters;
         this.nombre = nombre;
+        this.constant = constant;
+    }
+    
+    public String getNombre() {
+        return nombre;
+    }
+    
+    public List<Expression> getParameters() {
+        return parameters;
+    }
+    
+    public boolean isConstant() {
+        return constant;
     }
 }

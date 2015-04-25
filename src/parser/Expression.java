@@ -7,23 +7,28 @@ package parser;
 
 import compiladorpseu.Tokens.Token;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Sebastian
  */
 public class Expression {
-    private ArrayList<Token> tokens = new ArrayList<Token>();
+    private List<Object> tokens = new ArrayList<Object>();
     
     public Expression() {
         
     }
     
-    public void addToken(Token token) {
-        tokens.add(token);
+    public void add(Object obj) {
+        tokens.add(obj);
     }
     
     public boolean isEmpty() {
         return tokens.isEmpty();
+    }
+    
+    public List<Object> getTokens() {
+        return tokens;
     }
 }

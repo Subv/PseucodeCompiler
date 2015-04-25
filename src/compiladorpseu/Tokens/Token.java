@@ -54,4 +54,17 @@ public class Token {
         this.texto = identificador;
         this.lex_index = lex_index - identificador.length();
     }
+    
+    public boolean isOperator() {
+        switch (id) {
+            case MAS_BINARIO:
+            case MENOS_BINARIO:
+            case MODULO:
+            case MAYOR_QUE:
+            case MENOR_QUE:
+            case ASIGNACION:
+                return true;
+        }
+        return false;
+    }
 }

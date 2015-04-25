@@ -17,4 +17,8 @@ public class DeclarationStatement extends ParserStatement {
     public DeclarationStatement(List<Identifier> identifiers) {
         this.identifiers = identifiers;
     }
+    
+    public List<Identifier> getIdentifiers() {
+        return identifiers;
+    }
 }

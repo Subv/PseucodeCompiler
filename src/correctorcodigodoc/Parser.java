@@ -43,7 +43,7 @@ public class Parser {
             case PROC: // Nada que hacer
             case FIN: // Nada que hacer
             case NUEVA_LINEA: // Nada que hacer
-            case DOS_PUNTOS:
+            case DOS_PUNTOS: // Nada que hacer
                 statement = new NullStatement();
                 break;
                 
@@ -72,6 +72,16 @@ public class Parser {
                 next_token = lexer.prevToken();
                 break;
             }
+            
+            case PARA: {
+                statement = parseForStatement(next_token);
+                next_token = lexer.nextToken();
+                break;
+            }
+            case FIN_PARA: {
+                statement = new EndForStatement();
+                break;
+            }
         }
         
         current_token = next_token;
@@ -94,8 +104,8 @@ public class Parser {
             
             token = lexer.nextToken();
             
-            // La lista termina con una nueva linea
-            if (token.id == Token.Ids.NUEVA_LINEA)
+            // La lista termina con una nueva linea, o con el final del documento
+            if (token == null || token.id == Token.Ids.NUEVA_LINEA)
                 break;
             
             // Si lo que sigue no es una coma, tenemos un error de sintaxis
@@ -117,39 +127,43 @@ public class Parser {
      */
     public Identifier parseIdentifier(Token token_inicial) throws ParseException {
         Token next_token = lexer.peekToken();
-        
-        if (next_token.id == Token.Ids.PARENTESIS_ABRE) {
-            // El identificador es un arreglo, parsea los parametros hasta el (
+
+        if (next_token != null && next_token.id == Token.Ids.PARENTESIS_ABRE) {
+            if (token_inicial.id == Token.Ids.NUMERO)
+                throw new ParseException("Numero como array");
+            
+            // El identificador es un arreglo, parsea los parametros hasta el )
             // Comete el (
             lexer.nextToken();
-            List<Expression> parametros = parseExpressionList(lexer.nextToken());
+            List<Expression> parametros = parseExpressionList(lexer.nextToken(), Token.Ids.PARENTESIS_CIERRA);
             if (parametros.isEmpty()) {
                 throw new ParseException("Error de sintaxis en la lista de identificadores");
             }
-            return new Identifier(token_inicial.texto, parametros);
+            return new Identifier(token_inicial.texto, parametros, false);
         }
         
-        return new Identifier(token_inicial.texto, null);
+        return new Identifier(token_inicial.texto, null, token_inicial.id == Token.Ids.NUMERO);
     }
     
     /*
      * Parsea una lista de expresiones de la forma 
      * IDENTIFICADOR/NUMERO OPERADOR IDENTIFICADOR/NUMERO, IDENTIFICADOR/NUMERO OPERADOR IDENTIFICADOR/NUMERO
      * @param token_inicial El primer token de la lista
+     * @param finalizer Id del token que finaliza la lista de expresiones
      * @returns Lista con las expresiones parseadas
      */
-    public List<Expression> parseExpressionList(Token token_inicial) throws ParseException {
+    public List<Expression> parseExpressionList(Token token_inicial, Token.Ids finalizer) throws ParseException {
         List<Expression> ret = new ArrayList<Expression>();
         
         Token token = token_inicial;
         
         while (token.id == Token.Ids.IDENTIFIER || token.id == Token.Ids.NUMERO) {
-            ret.add(parseExpression(token));
+            ret.add(parseExpression(token, finalizer));
             
             token = lexer.nextToken();
             
-            // La lista termina con un parentesis )
-            if (token.id == Token.Ids.PARENTESIS_CIERRA)
+            // La lista termina con un parentesis ), o al final del documento
+            if (token == null || token.id == finalizer)
                 break;
             
             // Si lo que sigue no es una coma, tenemos un error de sintaxis
@@ -166,23 +180,60 @@ public class Parser {
     /*
      * Parsea una expresión de la forma IDENTIFICADOR/NUMERO OPERADOR IDENTIFICADOR/NUMERO
      * @param token_inicial Token con el que comienza la expresión
+     * @param finalizer Id del token que finaliza la lista de expresiones
      * @returns Expresión parseada
      */
-    public Expression parseExpression(Token token_inicial) throws ParseException {
+    public Expression parseExpression(Token token_inicial, Token.Ids finalizer) throws ParseException {
         
         Token token = token_inicial;
-        Token next_token = lexer.peekToken();
         
         Expression expr = new Expression();
         
-        expr.addToken(token);
+        expr.add(parseIdentifier(token));
         
-        while (next_token.id != Token.Ids.COMA && next_token.id != Token.Ids.PARENTESIS_CIERRA && next_token.id != Token.Ids.NUEVA_LINEA) {
+        Token next_token = lexer.peekToken();
+        
+        while (next_token != null && next_token.id != Token.Ids.COMA && next_token.id != finalizer && next_token.id != Token.Ids.NUEVA_LINEA) {
             token = lexer.nextToken();
-            expr.addToken(token);
+            
+            if (token.isOperator()) {
+                expr.add(token);
+            } else {
+                expr.add(parseIdentifier(token));
+            }
+            
             next_token = lexer.peekToken();
         }
         
         return expr;
+    }
+    
+    /*
+     * Parsea una estructura PARA de la forma PARA ASIGNACION,IDENTIFIER,NUMERO HAGA
+     * @param token_inicial El token que comienza la asignacion del para
+     * @returns La estructura PARA parseada
+     */
+    public ForStatement parseForStatement(Token token_inicial) throws ParseException {
+        // Parsea las condiciones del para
+        List<Expression> conditions = parseExpressionList(token_inicial, Token.Ids.HAGA);
+        
+        if (conditions.size() != 3) {
+            throw new ParseException("FOR malformado");
+        }
+        
+        // Parsea el cuerpo del para, hasta que encontremos un FIN_PARA
+        List<ParserStatement> body = new ArrayList<ParserStatement>();
+        
+        // Comete el HAGA
+        current_token = lexer.nextToken();
+        
+        ParserStatement statement = null;
+        
+        while (statement == null || !(statement instanceof EndForStatement)) {
+            statement = parseStatement();
+            body.add(statement);
+        }
+        
+        return new ForStatement(conditions, body);
     }
 }
